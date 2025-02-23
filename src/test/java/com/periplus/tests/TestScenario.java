@@ -39,9 +39,11 @@ public class TestScenario {
                 .openPage(driver)
                 .goToAuthPage(driver);
 
-        authPage.login(driver, LOGIN, PASSWORD);
+        authPage
+                .login(driver, LOGIN, PASSWORD);
 
-        accountPage.searchProductByISBN(driver, ISBN);
+        accountPage
+                .searchProductByISBN(driver, ISBN);
 
         productPage
                 .checkBookName(driver, EXPECTED_BOOK_TITLE)

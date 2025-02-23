@@ -11,28 +11,28 @@ import java.time.temporal.ChronoUnit;
 public class WaitsHelper {
 
     public static void waitForElementAvailability(
-            WebDriver driver, WebElement elementThatMustBeAvailable, String elementThatMustBeHiddenCSSSelector) {
+            WebDriver driver, WebElement webElementThatMustBeAvailable, String elementThatMustBeHiddenCSSSelector) {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
 
         wait.until(webDriver -> {
             WebElement preloader = driver.findElement(By.cssSelector(elementThatMustBeHiddenCSSSelector));
             return (
-                    elementThatMustBeAvailable != null &&
-                            elementThatMustBeAvailable.isDisplayed() &&
-                            elementThatMustBeAvailable.isEnabled()
+                    webElementThatMustBeAvailable != null &&
+                            webElementThatMustBeAvailable.isDisplayed() &&
+                            webElementThatMustBeAvailable.isEnabled()
                             && !preloader.isDisplayed());
         });
     }
 
 
-    public static void waitForElementAvailability(WebDriver driver, WebElement elementThatMustBeAvailable) {
+    public static void waitForElementAvailability(WebDriver driver, WebElement webElementThatMustBeAvailable) {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
 
         wait.until(webDriver -> (
-                elementThatMustBeAvailable != null &&
-                        elementThatMustBeAvailable.isDisplayed() &&
-                        elementThatMustBeAvailable.isEnabled()));
+                webElementThatMustBeAvailable != null &&
+                        webElementThatMustBeAvailable.isDisplayed() &&
+                        webElementThatMustBeAvailable.isEnabled()));
     }
 }
