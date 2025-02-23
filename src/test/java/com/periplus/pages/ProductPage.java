@@ -1,22 +1,22 @@
 package com.periplus.pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-
+import static com.periplus.entities.constants.CSSSelectors.PRELOADER;
+import static com.periplus.helpers.WaitsHelper.waitForElementAvailability;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 public class ProductPage {
 
+    private final String NOTIFICATION_MODAL_CSS_SELECTOR = "#Notification-Modal";
+    private final String EXPECTED_BOOK_TITLE =
+            "The Lord of the Rings Illustrated by the Author: Illustrated by J.R.R. Tolkien";
+    private final String EXPECTED_SUCCESS_MESSAGE = "Success add to cart";
+    private final int EXPECTED_BOOK_COUNT = 1;
     SoftAssert softAssert = new SoftAssert();
 
     @FindBy(css = "h2")
@@ -35,15 +35,9 @@ public class ProductPage {
     public ProductPage checkBookName(WebDriver driver) {
         PageFactory.initElements(driver, this);
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
+        waitForElementAvailability(driver, bookTitle, PRELOADER);
 
-        wait.until(webDriver -> {
-            WebElement preloader = driver.findElement(By.cssSelector(".preloader"));
-            return (bookTitle != null && bookTitle.isDisplayed() && bookTitle.isEnabled() && !preloader.isDisplayed());
-        });
-
-        assertEquals(bookTitle.getText(),
-                "The Lord of the Rings Illustrated by the Author: Illustrated by J.R.R. Tolkien");
+        assertEquals(bookTitle.getText(), EXPECTED_BOOK_TITLE);
 
         return this;
     }
@@ -54,13 +48,9 @@ public class ProductPage {
     }
 
     public ProductPage checkPopupMessage(WebDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
+        waitForElementAvailability(driver, modalText);
 
-        wait.until(webDriver -> {
-            return (modalText != null && modalText.isDisplayed() && modalText.isEnabled());
-        });
-
-        softAssert.assertEquals(modalText.getText(), "Success add to cart");
+        softAssert.assertEquals(modalText.getText(), EXPECTED_SUCCESS_MESSAGE);
         softAssert.assertTrue(modalCheckMark.isDisplayed());
         softAssert.assertAll();
 
@@ -68,19 +58,14 @@ public class ProductPage {
     }
 
     public ProductPage checkCartCounter() {
-        assertEquals(cartCounter.getText(), "1");
+        assertEquals(cartCounter.getText(), String.valueOf(EXPECTED_BOOK_COUNT));
 
         return this;
     }
 
     public void goToCart(WebDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
-
-        wait.until(webDriver -> {
-            WebElement notificationModal = driver.findElement(By.cssSelector("#Notification-Modal"));
-            return (cart != null && cart.isDisplayed() && cart.isEnabled() && !notificationModal.isDisplayed());
-        });
-
+        waitForElementAvailability(driver, cart,
+                NOTIFICATION_MODAL_CSS_SELECTOR);
         cart.click();
     }
 }

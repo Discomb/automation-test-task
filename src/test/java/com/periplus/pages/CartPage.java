@@ -6,16 +6,22 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.asserts.SoftAssert;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static org.testng.AssertJUnit.assertEquals;
+import static com.periplus.entities.constants.CSSSelectors.PRELOADER;
+import static com.periplus.helpers.WaitsHelper.waitForElementAvailability;
+import static org.testng.Assert.assertEquals;
+
 
 public class CartPage {
+
+    private final String EXPECTED_LOGOUT_TEXT =
+            "You have been logged off your account. It is now safe to leave the computer.";
+    private final String EXPECTED_BOOK_TITLE =
+            "The Lord of the Rings Illustrated by the Author: Illustrated by J.R.R. Tolkien";
+    private final String BOOK_TITLE_CSS_SELECTOR = ".product-name.limit-lines";
 
     @FindBy(css = "div.row.row-cart-product")
     List<WebElement> cartItems;
@@ -32,17 +38,12 @@ public class CartPage {
     public CartPage checkCartItems(WebDriver driver) {
         PageFactory.initElements(driver, this);
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
-
-        wait.until(webDriver -> {
-            WebElement preloader = driver.findElement(By.cssSelector(".preloader"));
-            return (cartItems != null && cartItems.get(0).isDisplayed() && cartItems.get(0).isEnabled() && !preloader.isDisplayed());
-        });
+        waitForElementAvailability(driver, cartItems.get(0), PRELOADER);
 
         softAssert.assertEquals(cartItems.size(), 1);
         softAssert.assertEquals(cartItems.get(0).findElement(
-                        By.cssSelector(".product-name.limit-lines")).getText(),
-                "The Lord of the Rings Illustrated by the Author: Illustrated by J.R.R. Tolkien");
+                        By.cssSelector(BOOK_TITLE_CSS_SELECTOR)).getText(),
+                EXPECTED_BOOK_TITLE);
 //        softAssert.assertEquals(
 //                cartItems.get(0).findElement(By.cssSelector("p.product-des")).getText().trim(),
 //                "9780358653035");
@@ -57,21 +58,11 @@ public class CartPage {
         Actions actions = new Actions(driver);
 
         actions.moveToElement(accountButton).perform();
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
-
-        wait.until(webDriver -> {
-            return (logoutButton != null && logoutButton.isDisplayed() && logoutButton.isEnabled());
-        });
-
+        waitForElementAvailability(driver, logoutButton);
         logoutButton.click();
-
-        wait.until(webDriver -> {
-            WebElement preloader = driver.findElement(By.cssSelector(".preloader"));
-            return (logoutText != null && logoutText.isDisplayed() && logoutText.isEnabled() && !preloader.isDisplayed());
-        });
+        waitForElementAvailability(driver, logoutText, PRELOADER);
 
         assertEquals(logoutText.getText(),
-                "You have been logged off your account. It is now safe to leave the computer.");
+                EXPECTED_LOGOUT_TEXT);
     }
 }

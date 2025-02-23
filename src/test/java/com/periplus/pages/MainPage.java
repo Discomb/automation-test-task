@@ -1,17 +1,16 @@
 package com.periplus.pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.concurrent.TimeUnit;
+import static com.periplus.entities.constants.CSSSelectors.PRELOADER;
+import static com.periplus.helpers.WaitsHelper.waitForElementAvailability;
 
 public class MainPage {
+
+    private final String MAIN_PAGE_URL = "https://www.periplus.com/";
 
     @FindBy(css = "#nav-signin-text")
     private WebElement authButton;
@@ -22,18 +21,13 @@ public class MainPage {
     public MainPage openPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
 
-        driver.get("https://www.periplus.com/");
+        driver.get(MAIN_PAGE_URL);
+
         return this;
     }
 
     public void openAuthPage(WebDriver driver) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
-
-        wait.until(webDriver -> {
-           WebElement preloader = driver.findElement(By.cssSelector(".preloader"));
-           return (authButton != null && authButton.isDisplayed() && authButton.isEnabled() && !preloader.isDisplayed());
-        });
-
+        waitForElementAvailability(driver, authButton, PRELOADER);
         authButton.click();
     }
 
