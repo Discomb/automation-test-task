@@ -13,10 +13,7 @@ import static org.testng.Assert.assertEquals;
 public class ProductPage {
 
     private final String NOTIFICATION_MODAL_CSS_SELECTOR = "#Notification-Modal";
-    private final String EXPECTED_BOOK_TITLE =
-            "The Lord of the Rings Illustrated by the Author: Illustrated by J.R.R. Tolkien";
-    private final String EXPECTED_SUCCESS_MESSAGE = "Success add to cart";
-    private final int EXPECTED_BOOK_COUNT = 1;
+
     SoftAssert softAssert = new SoftAssert();
 
     @FindBy(css = "h2")
@@ -32,12 +29,12 @@ public class ProductPage {
     @FindBy(css = "#show-your-cart")
     WebElement cart;
 
-    public ProductPage checkBookName(WebDriver driver) {
+    public ProductPage checkBookName(WebDriver driver, String expectedBookTitle) {
         PageFactory.initElements(driver, this);
 
         waitForElementAvailability(driver, bookTitle, PRELOADER);
 
-        assertEquals(bookTitle.getText(), EXPECTED_BOOK_TITLE);
+        assertEquals(bookTitle.getText(), expectedBookTitle);
 
         return this;
     }
@@ -47,18 +44,18 @@ public class ProductPage {
         return this;
     }
 
-    public ProductPage checkPopupMessage(WebDriver driver) {
+    public ProductPage checkPopupMessage(WebDriver driver, String expectedSuccessMessage) {
         waitForElementAvailability(driver, modalText);
 
-        softAssert.assertEquals(modalText.getText(), EXPECTED_SUCCESS_MESSAGE);
+        softAssert.assertEquals(modalText.getText(), expectedSuccessMessage);
         softAssert.assertTrue(modalCheckMark.isDisplayed());
         softAssert.assertAll();
 
         return this;
     }
 
-    public ProductPage checkCartCounter() {
-        assertEquals(cartCounter.getText(), String.valueOf(EXPECTED_BOOK_COUNT));
+    public ProductPage checkCartCounter(int expectedBookCount) {
+        assertEquals(cartCounter.getText(), String.valueOf(expectedBookCount));
 
         return this;
     }

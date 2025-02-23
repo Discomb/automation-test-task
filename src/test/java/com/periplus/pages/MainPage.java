@@ -26,7 +26,7 @@ public class MainPage {
         return this;
     }
 
-    public void openAuthPage(WebDriver driver) {
+    public void goToAuthPage(WebDriver driver) {
         waitForElementAvailability(driver, authButton, PRELOADER);
         authButton.click();
     }

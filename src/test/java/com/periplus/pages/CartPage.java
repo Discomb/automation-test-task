@@ -17,10 +17,6 @@ import static org.testng.Assert.assertEquals;
 
 public class CartPage {
 
-    private final String EXPECTED_LOGOUT_TEXT =
-            "You have been logged off your account. It is now safe to leave the computer.";
-    private final String EXPECTED_BOOK_TITLE =
-            "The Lord of the Rings Illustrated by the Author: Illustrated by J.R.R. Tolkien";
     private final String BOOK_TITLE_CSS_SELECTOR = ".product-name.limit-lines";
 
     @FindBy(css = "div.row.row-cart-product")
@@ -35,25 +31,29 @@ public class CartPage {
 
     SoftAssert softAssert = new SoftAssert();
 
-    public CartPage checkCartItems(WebDriver driver) {
+    public CartPage checkCartItems(WebDriver driver, String isbn, String expectedBookTitle, int expectedBookCount) {
         PageFactory.initElements(driver, this);
 
         waitForElementAvailability(driver, cartItems.get(0), PRELOADER);
 
-        softAssert.assertEquals(cartItems.size(), 1);
+        softAssert.assertEquals(cartItems.size(), expectedBookCount);
         softAssert.assertEquals(cartItems.get(0).findElement(
                         By.cssSelector(BOOK_TITLE_CSS_SELECTOR)).getText(),
-                EXPECTED_BOOK_TITLE);
-//        softAssert.assertEquals(
-//                cartItems.get(0).findElement(By.cssSelector("p.product-des")).getText().trim(),
-//                "9780358653035");
-//        softAssert.assertEquals(cartItems.get(0).findElement(By.cssSelector(".input-number.text-center")).getCssValue("value"), 1);
+                expectedBookTitle);
+        softAssert.assertEquals(
+                cartItems.get(0).findElement(
+                        By.xpath("//*[@id=\"basket\"]/div/div/div/div/div/div/div[1]/div[2]/div[2]"))
+                            .getText().trim(),
+                isbn);
+        softAssert.assertEquals(cartItems.get(0)
+                .findElement(By.cssSelector("input.input-number.text-center"))
+                .getAttribute("value"), String.valueOf(expectedBookCount));
         softAssert.assertAll();
 
         return this;
     }
 
-    public void logout(WebDriver driver) {
+    public void logout(WebDriver driver, String expectedLogoutText) {
 
         Actions actions = new Actions(driver);
 
@@ -63,6 +63,6 @@ public class CartPage {
         waitForElementAvailability(driver, logoutText, PRELOADER);
 
         assertEquals(logoutText.getText(),
-                EXPECTED_LOGOUT_TEXT);
+                expectedLogoutText);
     }
 }
