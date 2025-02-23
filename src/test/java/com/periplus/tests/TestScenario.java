@@ -58,7 +58,9 @@ public class TestScenario {
 
     @AfterClass
     void tearDown() {
-        cartPage.logout(driver, EXPECTED_LOGOUT_TEXT);
+        cartPage
+                .removeItem(driver)
+                .logout(driver, EXPECTED_LOGOUT_TEXT);
         driver.quit();
     }
 }

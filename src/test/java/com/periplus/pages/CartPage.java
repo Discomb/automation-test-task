@@ -27,6 +27,10 @@ public class CartPage {
     WebElement logoutButton;
     @FindBy(css = "#content p")
     WebElement logoutText;
+    @FindBy(css = ".btn.btn-cart-remove")
+    WebElement removeButton;
+    @FindBy(xpath = "//*[@id=\"content\"]/div[2]")
+    WebElement emptyCartMessage;
 
 
     SoftAssert softAssert = new SoftAssert();
@@ -42,13 +46,23 @@ public class CartPage {
                 expectedBookTitle);
         softAssert.assertEquals(
                 cartItems.get(0).findElement(
-                        By.xpath("//*[@id=\"basket\"]/div/div/div/div/div/div/div[1]/div[2]/div[2]"))
-                            .getText().trim(),
+                                By.xpath("//*[@id=\"basket\"]/div/div/div/div/div/div/div[1]/div[2]/div[2]"))
+                        .getText().trim(),
                 isbn);
         softAssert.assertEquals(cartItems.get(0)
                 .findElement(By.cssSelector("input.input-number.text-center"))
                 .getAttribute("value"), String.valueOf(expectedBookCount));
         softAssert.assertAll();
+
+        return this;
+    }
+
+    public CartPage removeItem(WebDriver driver) {
+        removeButton.click();
+
+        waitForElementAvailability(driver, emptyCartMessage, PRELOADER);
+
+        assertEquals(emptyCartMessage.getText(), "Your shopping cart is empty");
 
         return this;
     }
